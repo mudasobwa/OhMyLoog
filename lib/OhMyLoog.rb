@@ -1,5 +1,5 @@
-require "OhMyLoog/version"
+$LOAD_PATH <<  File.expand_path(File.dirname(__FILE__) + '/..')
 
-module OhMyLoog
-  # Your code goes here...
-end
+require 'OhMyLoog/version'
+require 'OhMyLoog/writers'
+require 'OhMyLoog/logger'
