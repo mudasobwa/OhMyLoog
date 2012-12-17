@@ -7,7 +7,7 @@ module OhMyLoog
 
     def initialize(name)
       @logger = Logger.new(name)
-      @tty = Writers::XTerm256.instance if (IO === name) && name.tty?
+      @tty = ((IO === name) && name.tty?) ? Writers::XTerm256.instance : Writers::File4Vim.instance
     end
 
     def backend

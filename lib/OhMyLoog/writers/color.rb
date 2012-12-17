@@ -239,6 +239,8 @@ module OhMyLoog
             '#F89406'
           when :important
             '#B94A48'
+          when :fatal
+            '#B94A48'
           when :error
             '#FF0000'
           when :info

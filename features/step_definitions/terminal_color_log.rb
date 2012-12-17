@@ -5,7 +5,7 @@ Given "there is an instance of Loogger for terminal output" do
   @tty = OhMyLoog::Writers::XTerm256.instance
 end
 
-When "I issue the logger backend" do
+When "I issue the XTerm256’s logger backend" do
   @backend = @loog.backend
 end
 
@@ -43,3 +43,14 @@ Then "bold text on red background without any additional styling should appear" 
   raise "Escaped string (#{@c.dump}) is wrong" unless @c =~ /\[01;38;05;(\d+);48;05;#{bg}m(.*?)\n#{@s}/m
 end
 
+When /I call methods debug, info, warn, error, fatal on "(.*?)" string for terminal/ do |msg|
+  @loog.debug msg
+  @loog.info msg
+  @loog.warn msg
+  @loog.error msg
+  @loog.fatal msg
+end
+
+Then 'they are to be printed on terminal' do
+  puts "Please ensure all colors above are OK."
+end

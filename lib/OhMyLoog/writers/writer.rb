@@ -41,7 +41,7 @@ module OhMyLoog
 
       DTFMT = '%y-%m-%d %H:%M:%S'
       
-      to_implement! :colorize
+      to_implement! :colorize, :aux_which, :aux_when
 
       attr_reader :fg, :bg, :flags
      
@@ -76,7 +76,7 @@ module OhMyLoog
       end
 
       def format msg, severity = Logger::UNKNOWN
-        "#{auxiliary(severity)}\n#{msg}"
+        "#{auxiliary(severity)}\n#{msg}\n"
       end
     
       # separator is printed out between columns
@@ -105,8 +105,8 @@ module OhMyLoog
       end
 
       def aux_where severity
-        f, l, m, d = AbstractWriter.parse_caller
-        ["+#{l} #{f}", "#{m}()", "#{d}"].join(sep)
+        f, l, m, d = AbstractWriter.parse_caller 10
+        ["+#{l} #{colorize f, nil, nil, {:b => true}}", "#{m}()", "#{d}"].join(sep)
       end
 
     protected
