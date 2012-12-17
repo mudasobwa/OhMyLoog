@@ -10,7 +10,7 @@ module OhMyLoog
 
       # Flags may be :b for bold, :i for italic, :u for underline,
       #              :r for reverse  
-      def colorize txt, fg = nil, bg = nil, flags
+      def colorize txt, fg, bg, flags
         fgc = (fg.nil? || Color === fg ) ? fg : Color.parse(fg)
         bgc = (bg.nil? || Color === bg) ? bg : Color.parse(bg)
         esc = []
@@ -23,7 +23,19 @@ module OhMyLoog
         
         esc.empty? ? txt : "\e[#{esc.join(';')}m#{txt}\e[0m" 
       end
-        
+
+      def aux_which severity
+        nil
+      end
+      
+      # the datetime is being printed on severity’s dependent background
+      def aux_when severity
+        type = AbstractWriter.type_by_severity severity
+        setBg Color.preset type
+        setBold [:error, :fatal].include?(type)
+        prepare "#{Time.now.strftime(DTFMT)}"
+      end
+
     end
   end
 end 

@@ -224,6 +224,10 @@ module OhMyLoog
           16 + 36 * (r / 51).floor + 6 * (g / 51).floor + (b / 51).floor
         end
       end
+
+      def self.xterm256 type
+        Color.parse(preset type).xterm256
+      end
       
       def self.preset type
         case type

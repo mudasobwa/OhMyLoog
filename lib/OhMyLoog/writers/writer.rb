@@ -43,38 +43,93 @@ module OhMyLoog
       
       to_implement! :colorize
 
-      attr_reader :fg, :bg
-      
-      @fg = Color.parse('#fff')
-      @bg = nil
+      attr_reader :fg, :bg, :flags
+     
+      def initialize(*args)
+        @fg = Color.parse('#fff')
+        @bg = nil
+        @flags = {}
+      end
 
-      def setFG fg
+      def setFg fg
         @fg = Color.parse(fg)
       end
       
-      def setBG bg
+      def setBg bg
         @bg = Color.parse(bg)
       end
 
-      def pattern s, fg = nil, bg = nil, flags
-        colorize s, fg, bg, flags
+      def setBold b
+        b ? @flags[:b] = b : @flags.delete(:b)
+      end
+
+      def setItalic i
+        i ? @flags[:i] = i : @flags.delete(:i)
+      end
+
+      def setUnderline u
+        u ? @flags[:u] = u : @flags.delete(:u)
+      end
+
+      def setReverse r
+        r ? @flags[:r] = r : @flags.delete(:r)
+      end
+
+      def format msg, severity = Logger::UNKNOWN
+        "#{auxiliary(severity)}\n#{msg}"
       end
     
-      def dt_size
-        return 2 + DTFMT.length
-      end
-
-      # schild is printed out at the beginning of line
-      # if size is less or equal zero, the datetime in standard from is being printed
-      def schild type, dt = nil
-        colorize dt ? " #{Time.now.strftime(DTFMT)} " : dt_size, @fg, Color.preset(type), {}     
-      end
-
       # separator is printed out between columns
       def separator 
         colorize ' | ', Color.parse('#999'), nil, :b => true
       end
       alias sep separator
+
+      #Stolen from ActionMailer, where this was used but was not made reusable
+      def self.parse_caller(depth=1)
+        if /^(.+?):(\d+)(?::in `(.*)')?/ =~ caller(depth + 1).first
+          dir, file = Pathname.new(Regexp.last_match[1]).split
+          line      = Regexp.last_match[2].to_i
+          method    = Regexp.last_match[3]
+          [file, line, method, dir]
+        end
+      end
+
+    protected
+      def prepare str
+        colorize str, @fg, @bg, @flags
+      end
+
+      def auxiliary severity
+        ([aux_which(severity), aux_when(severity), aux_where(severity)] - [nil]).join(sep)
+      end
+
+      def aux_where severity
+        f, l, m, d = AbstractWriter.parse_caller
+        ["+#{l} #{f}", "#{m}()", "#{d}"].join(sep)
+      end
+
+    protected
+      # type of message by severity
+      def self.type_by_severity severity
+        case severity
+          when Logger::UNKNOWN, 'UNKNOWN'
+            :label
+          when Logger::INFO, 'INFO'
+            :info
+          when Logger::FATAL, 'FATAL'
+            :fatal
+          when Logger::ERROR, 'ERROR'
+            :error
+          when Logger::WARN, 'WARN'
+            :warning
+          when Logger::DEBUG, 'DEBUG'
+            :inverse
+          else
+            :important
+#            :success
+        end
+      end
 
     end
 

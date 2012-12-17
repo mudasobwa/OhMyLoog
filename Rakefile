@@ -1,9 +1,5 @@
 require 'bundler/setup'
 
-require 'bueller'
-Bueller::Tasks.new
-Bueller::GemcutterTasks.new
-
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:examples) do |examples|
   examples.rspec_opts = '-Ispec'
@@ -19,7 +15,7 @@ Cucumber::Rake::Task.new(:features)
 
 task :default => :examples
 
-require 'rake/rdoctask'
+require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 

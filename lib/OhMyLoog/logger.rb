@@ -4,29 +4,41 @@ require 'OhMyLoog/writers'
 
 module OhMyLoog
   class Loogger
-    attr_accessor :colored
 
     def initialize(name)
       @logger = Logger.new(name)
       @tty = Writers::XTerm256.instance if (IO === name) && name.tty?
-      @colored = true
     end
 
-    def pattern s, fg = nil, bg = nil, flags
-      @tty.pattern s, fg, bg, flags
+    def backend
+      @logger.class 
     end
-    
+
+    def fatal msg
+      add msg, Logger::FATAL
+    end
+
+    def error msg
+      add msg, Logger::ERROR
+    end
+
+    def warning msg
+      add msg, Logger::WARN
+    end
+    alias warn warning
 
     def info msg
-      add Logger::INFO, msg
+      add msg, Logger::INFO
+    end
+
+    def debug msg
+      add msg, Logger::DEBUG
     end
 
   protected
-    def add severity = Logger::UNKNOWN, msg = nil
+    def add msg, severity = Logger::UNKNOWN
       @logger.formatter = lambda do |severity, datetime, progname, msg|
-        dt = @tty.schild(@colored ? type_by_severity(severity) : nil, datetime)
-        f, l, m, d = Loogger.caller_method
-        format dt, "+#{l} #{f}", msg, m, d
+        @tty.format msg, severity
       end
       @logger.add severity, msg
     end
@@ -81,41 +93,6 @@ module OhMyLoog
 
     def cols
       (Writers::XTerm256 === @tty) ? Integer(ENV['COLUMNS']) : 80
-    end
-
-    def self.caller_method(depth=1)
-      parse_caller(caller(depth+1).first)
-    end
-
-  private
-    # type of message by severity
-    def type_by_severity severity
-      case severity
-        when Logger::UNKNOWN, 'UNKNOWN'
-          :label
-        when Logger::INFO, 'INFO'
-          :info
-        when Logger::FATAL, 'FATAL'
-          :error
-        when Logger::ERROR, 'ERROR'
-          :important
-        when Logger::WARN, 'WARN'
-          :warning
-        when Logger::DEBUG, 'DEBUG'
-          :inverse
-        else
-          :success
-      end
-    end
-
-    #Stolen from ActionMailer, where this was used but was not made reusable
-    def self.parse_caller(at)
-      if /^(.+?):(\d+)(?::in `(.*)')?/ =~ at
-        dir, file = Pathname.new(Regexp.last_match[1]).split
-        line      = Regexp.last_match[2].to_i
-        method    = Regexp.last_match[3]
-        [file, line, method, dir]
-      end
     end
 
   end

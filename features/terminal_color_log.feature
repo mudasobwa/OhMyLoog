@@ -8,6 +8,11 @@ Feature: Colorizing output with terminal escape sequences
   @important
   Scenario: Print colorized string to stdout
     Given there is an instance of Loogger for terminal output
-    When I call loogger’s pattern method with fg color ("#ff6600",) bg color ("#333",) and set of modifiers ("{:b=>true, :u=>true, :i=>true, :r=>true}")
-    Then escaped string for two colors and all the modifiers is to be returned
-     But no other formatting is being applied
+    When I issue the logger backend
+    Then it’s class is XTerm256
+    When I call loogger’s info method on "Info" string
+    Then text on blue background without any additional styling should appear
+    When I call loogger’s warn method on "Warn" string
+    Then text on orange background without any additional styling should appear
+    When I call loogger’s error method on "Error" string
+    Then bold text on red background without any additional styling should appear
