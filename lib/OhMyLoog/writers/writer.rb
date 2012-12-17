@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'singleton'
+
 module OhMyLoog
   module Writers
     module Writer
@@ -46,12 +48,16 @@ module OhMyLoog
       @fg = Color.parse('#fff')
       @bg = nil
 
-      def setFG(fg)
+      def setFG fg
         @fg = Color.parse(fg)
       end
       
-      def setBG(bg)
+      def setBG bg
         @bg = Color.parse(bg)
+      end
+
+      def pattern s, fg = nil, bg = nil, flags
+        colorize s, fg, bg, flags
       end
     
       def dt_size

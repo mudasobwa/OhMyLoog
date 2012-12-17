@@ -3,7 +3,7 @@ require 'OhMyLoog/version'
 
 Gem::Specification.new do |s|
   s.name = 'OhMyLoog'
-  s.version = Ohmyloog::VERSION
+  s.version = OhMyLoog::VERSION
   s.platform = Gem::Platform::RUBY
   s.date = '2012-12-12'
   s.authors = ['Alexei Matyushkin']

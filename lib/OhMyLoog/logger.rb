@@ -12,6 +12,11 @@ module OhMyLoog
       @colored = true
     end
 
+    def pattern s, fg = nil, bg = nil, flags
+      @tty.pattern s, fg, bg, flags
+    end
+    
+
     def info msg
       add Logger::INFO, msg
     end
